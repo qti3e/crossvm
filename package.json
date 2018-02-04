@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run build; mocha dist/tests/**/*.js",
     "build": "babel src -d dist",
-    "lint": "eslint --config=./.eslintrc 'src/lib/**/*.js'",
+    "lint": "eslint --config=./.eslintrc 'src/**/*.js'",
     "prepublish": "npm run build"
   },
   "author": "Parsa Ghadimi <qti3eqti3e@gmail.com>",

@@ -23,6 +23,7 @@ describe('createContext', () => {
 
 describe('run', () => {
   let context = createContext();
+  let context2 = createContext();
   it('should be function', () => {
     expect(createContext).to.be.a('function');
   });
@@ -37,5 +38,11 @@ describe('run', () => {
   it('should update sandbox', () => {
     let job = run('a += 4', context);
     expect(job.result).to.equal(8);
+  });
+  it('should not change other context', () => {
+    let job2 = run('a = 2', context2);
+    let job1 = run('a', context);
+    expect(job2.result).to.equal(2);
+    expect(job1.result).to.equal(8);
   });
 });

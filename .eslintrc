@@ -5,6 +5,11 @@
     "es6": true
   },
 
+  "globals": {
+    "describe": true,
+    "it": true
+  },
+
   "parserOptions": {
     "ecmaVersion": 8,
     "sourceType": "module",
