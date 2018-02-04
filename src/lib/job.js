@@ -10,10 +10,15 @@ import {EventEmitter2} from 'eventemitter2';
 //  statusChanged
 export default class Job {
   constructor(bridge) {
+    this.bridge = bridge;
     this.eventsLoop = [];
     this.emitter = new EventEmitter2();
     this.outputs = [];
-    bridge.sub(({type, data}) => {
+    this.eOn = this.emitter.on.bind(this.emitter);
+    this.updateStatus = this.updateStatus.bind(this);
+    this.close = this.close.bind(this);
+    this.on = this.on.bind(this);
+    this.bridge.sub(({type, data}) => {
       if(this.closed) {
         return;
       }
@@ -41,7 +46,6 @@ export default class Job {
       }
       this.updateStatus();
     });
-    this.on = this.emitter.on;
   }
 
   updateStatus() {
@@ -60,5 +64,14 @@ export default class Job {
   close() {
     this.closed = true;
     this.status = 'closed';
+  }
+
+  on(ch, m) {
+    if(ch === 'write') {
+      for(let i = 0; i < this.outputs.length; i += 1) {
+        m(this.outputs[i]);
+      }
+    }
+    this.eOn(ch, m);
   }
 }

@@ -29,10 +29,20 @@ export function registerVMDef(name, method) {
 }
 
 export function createContext() {
-  return createGlobalRef({});
+  let ref = createGlobalRef({});
+  return {
+    ref,
+    get(name) {
+      return globalEval(`${ref}.${name}`);
+    },
+    getSandbox() {
+      return globalEval(`${ref}`);
+    }
+  };
 }
 
 export function run(code, context, require) {
+  context = context.ref;
   let bridge = new Bridge();
   let PubRef = createGlobalRef(bridge) + '.pub';
   let RequireRef = typeof require === 'string' ? require : null;

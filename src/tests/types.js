@@ -13,11 +13,20 @@ describe('registerVMDef', () => {
 });
 
 describe('createContext', () => {
+  let context = createContext();
   it('should be function', () => {
     expect(createContext).to.be.a('function');
   });
-  it('should return string', () => {
-    expect(createContext()).to.be.a('string');
+  it('should return context object', () => {
+    expect(context).to.have.property('ref');
+    expect(context).to.have.property('get');
+    expect(context).to.have.property('getSandbox');
+  });
+  describe('get', () => {
+    run('a = "Hello from CrossVM"', context);
+    it('should return the right value', () => {
+      expect(context.get('a')).to.equal('Hello from CrossVM');
+    });
   });
 });
 
@@ -44,5 +53,11 @@ describe('run', () => {
     let job1 = run('a', context);
     expect(job2.result).to.equal(2);
     expect(job1.result).to.equal(8);
+  });
+  it('should write data to console', () => {
+    let job = run('console.log("Hello")', context);
+    job.on('write', ({data}) => {
+      expect(data[0]).to.equal('Hello');
+    });
   });
 });
