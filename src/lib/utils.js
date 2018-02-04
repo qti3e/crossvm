@@ -1,7 +1,7 @@
 export const IS_WEB = typeof window !== 'undefined';
 export const IS_NODE = !IS_WEB;
 export const globalEval = eval;
-
+export const global = globalEval(IS_WEB ? 'window' : 'global');
 
 export function cloneArray(array) {
   return Array.from(array);
@@ -26,7 +26,8 @@ export function cleanArray(arr) {
 export function shortId() {
   let ret = [];
   for(let i = 0; i < 6; i += 1) {
-    ret.push(Math.floor(Math.random() * (125 - 33)) + 33);
+    let b = Math.random() >= 0.5 ? 97 - 65 : 0;
+    ret.push(Math.floor(Math.random() * (90 - 65)) + 65 + b);
   }
   ret = ret.map(x => String.fromCharCode(x));
   return ret.join('');

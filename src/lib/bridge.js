@@ -12,10 +12,10 @@ export default class Bridge {
   }
 
   sub(method) {
-    if(typeof subscriber !== 'function') {
+    if(typeof method !== 'function') {
       return false;
     }
-    this.subscriber.push(method);
+    this.subscribers.push(method);
     return true;
   }
 }

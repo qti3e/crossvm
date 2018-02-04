@@ -272,7 +272,7 @@ const Functions = {
       changes = [];
       removes = [];
       // insert return for expression
-      for(let i = tree.body.length - 1; i > 0; i -= 1) {
+      for(let i = tree.body.length - 1; i >= 0; i -= 1) {
         let c = tree.body[i];
         if(c.type === 'VariableDeclaration' || c.type === 'ExpressionStatement') {
           let f = i === 0 ? prepend : append;

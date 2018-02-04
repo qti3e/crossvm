@@ -1,6 +1,6 @@
 import Bridge from './bridge';
 import Job from './job';
-import {createGlobalRef, globalEval} from './utils';
+import {createGlobalRef, globalEval, global} from './utils';
 import Transpiler from './transpiler';
 
 import VMConsole from './defs/console';
@@ -45,16 +45,17 @@ export function run(code, context, require) {
   try {
     code = Transpiler(code);
     code =
-    `try{
+    `
+    try{
       ${PubRef}({type: 'push', data: 'running'});
-      var data = (function(global, require){
-        (function(pub, _Defs_){
-          for(let key of _Defs_){
+      var data = (function(global, pub, _Defs_, require){
+        (function(){
+          for(let key in _Defs_){
             global[key] = _Defs_[key](pub)
           }
-        })(${PubRef}, ${global.crossVMDefRef})
+        })()
         ${code}
-      })(${context}, ${RequireRef})
+      })(${context},${PubRef}, ${global.crossVMDefRef}, ${RequireRef})
       ${PubRef}({type: 'result', data: data})
       ${PubRef}({type: 'rm', data: 'running'});
     } catch(e){
