@@ -25,7 +25,7 @@ if(!global.crossVMInit) {
 }
 
 export function registerVMDef(name, method) {
-  this.crossVMDef[name] = method;
+  global.crossVMDef[name] = method;
 }
 
 export function createContext() {

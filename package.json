@@ -2,12 +2,11 @@
   "name": "crossvm",
   "version": "0.0.2",
   "description": "Browser compatible Node VM",
-  "main": "dist/index.js",
+  "main": "dist/lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/index.js --exec babel-node",
+    "test": "npm run build; mocha dist/tests/**/*.js",
     "build": "babel src -d dist",
-    "lint": "eslint --config=./.eslintrc *.js src/*.js",
+    "lint": "eslint --config=./.eslintrc 'src/lib/**/*.js'",
     "prepublish": "npm run build"
   },
   "author": "Parsa Ghadimi <qti3eqti3e@gmail.com>",
@@ -19,8 +18,10 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "chai": "^4.1.2",
     "eslint": "^4.16.0",
     "eslint-plugin-spellcheck": "0.0.8",
+    "mocha": "^5.0.0",
     "nodemon": "^1.14.11"
   },
   "dependencies": {
