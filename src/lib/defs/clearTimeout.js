@@ -1,11 +1,20 @@
 import {IS_NODE} from '../utils';
 
+let prop = '_idleTimeout';
+
 export default function (pub) {
-  if(IS_NODE) {
-    return clearTimeout;
-  }
-  return function (timerId) {
-    pub({type: 'rm', data: timerId});
-    return clearTimeout(timerId);
+  return function (...args) {
+    if(IS_NODE) {
+      for(let i = 0; i < args.length; i += 1) {
+        if(args[i] && args[i][prop]) {
+          pub({type: 'rm', data: 'timeout'});
+        }
+      }
+    } else {
+      for(let i = 0; i < args.length; i += 1) {
+        pub({type: 'rm', data: args[i]});
+      }
+    }
+    return clearTimeout(...args);
   };
 }

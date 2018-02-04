@@ -31,7 +31,7 @@ describe('createContext', () => {
 });
 
 describe('run', () => {
-  let context = createContext();
+  let context = createContext({x: 10});
   let context2 = createContext();
   it('should be function', () => {
     expect(createContext).to.be.a('function');
@@ -59,5 +59,34 @@ describe('run', () => {
     job.on('write', ({data}) => {
       expect(data[0]).to.equal('Hello');
     });
+  });
+  it('should use sandbox initial values', () => {
+    run('x += 5', context);
+    expect(context.get('x')).to.equal(15);
+  });
+  describe('crash', () => {
+    it('cause by parse error', () => {
+      let job = run('x += a.', context);
+      expect(job.status).to.equal('crashed');
+    });
+    it('cause by run-time', () => {
+      let job = run('f()', context);
+      expect(job.status).to.equal('crashed');
+    });
+  });
+});
+
+describe('timers', () => {
+  let context = createContext();
+  let job = run('setTimeout(function(){}, 200)', context);
+  it('should be in `running` mode when timer is not finished', () => {
+    setTimeout(function () {
+      expect(job.status).to.equal('running');
+    }, 50);
+  });
+  it('should finish after timer', () => {
+    setTimeout(function () {
+      expect(job.status).to.equal('finished');
+    }, 250);
   });
 });

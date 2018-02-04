@@ -1,12 +1,13 @@
 import {IS_NODE} from '../utils';
 
 export default function (pub) {
-  if(IS_NODE) {
-    return setTimeout;
-  }
   return function (...args) {
     let timerId = setTimeout(...args);
-    pub({type: 'push', data: timerId});
+    if(IS_NODE) {
+      pub({type: 'push', data: 'timeout'});
+    } else {
+      pub({type: 'push', data: timerId});
+    }
     return timerId;
   };
 }
