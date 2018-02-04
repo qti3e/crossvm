@@ -21,6 +21,26 @@ var _transpiler = require('./transpiler');
 
 var _transpiler2 = _interopRequireDefault(_transpiler);
 
+var _console = require('./defs/console');
+
+var _console2 = _interopRequireDefault(_console);
+
+var _clearInterval = require('./defs/clearInterval');
+
+var _clearInterval2 = _interopRequireDefault(_clearInterval);
+
+var _clearTimeout = require('./defs/clearTimeout');
+
+var _clearTimeout2 = _interopRequireDefault(_clearTimeout);
+
+var _setTimeout = require('./defs/setTimeout');
+
+var _setTimeout2 = _interopRequireDefault(_setTimeout);
+
+var _setInterval = require('./defs/setInterval');
+
+var _setInterval2 = _interopRequireDefault(_setInterval);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (!global.crossVMInit) {
@@ -28,6 +48,11 @@ if (!global.crossVMInit) {
   global.crossVMRefs = {};
   global.crossVMDef = {
     // console: ...
+    console: _console2.default,
+    clearInterval: _clearInterval2.default,
+    clearTimeout: _clearTimeout2.default,
+    setTimeout: _setTimeout2.default,
+    setInterval: _setInterval2.default
   };
   global.crossVMRequire = (0, _utils.createGlobalRef)(require);
   global.crossVMDefRef = (0, _utils.createGlobalRef)(global.crossVMDef);
