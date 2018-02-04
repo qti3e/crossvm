@@ -28,8 +28,8 @@ export function registerVMDef(name, method) {
   global.crossVMDef[name] = method;
 }
 
-export function createContext() {
-  let ref = createGlobalRef({});
+export function createContext(sandbox = {}) {
+  let ref = createGlobalRef(sandbox);
   return {
     ref,
     get(name) {

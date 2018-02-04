@@ -14,11 +14,11 @@ npm install --save crossvm
 ```js
 import {createContext, run} from 'crossvm';
 const context1 = createContext();
-const context2 = createContext();
+const context2 = createContext({a: 4});
 run('a = 3', context1);
-run('a = 5', context2);
+run('a += 5', context2);
 assert(context1.get('a') === 3); // true
-assert(context1.get('a') === 5); // true
+assert(context2.get('a') === 9); // true
 let job = run(`console.log('Hello from CrossVM')`);
 job.on('write', (event) => {
   // event:
