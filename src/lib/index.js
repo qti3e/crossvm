@@ -58,14 +58,15 @@ export function run(code, context, require) {
     `
     try{
       ${PubRef}({type: 'push', data: 'running'});
-      var data = (function(global, pub, _Defs_, require){
+      var run = (function(global, pub, _Defs_, require){
         (function(){
           for(let key in _Defs_){
             global[key] = _Defs_[key](pub)
           }
         })()
         ${code}
-      })(${context},${PubRef}, ${global.crossVMDefRef}, ${RequireRef})
+      })
+      var data = run.call(${context}, ${context},${PubRef}, ${global.crossVMDefRef}, ${RequireRef})
       ${PubRef}({type: 'result', data: data})
       ${PubRef}({type: 'rm', data: 'running'});
     } catch(e){
