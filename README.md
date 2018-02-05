@@ -10,6 +10,16 @@ Sadly for now you can only use NPM to use this package.
 ```bash
 npm install --save crossvm
 ```  
+
+# Testing
+
+```bash
+git clone https://github.com/Qti3e/crossvm.git
+cd crossvm
+npm install
+npm run test
+```
+
 # Example
 ```js
 import {createContext, run} from 'crossvm';
