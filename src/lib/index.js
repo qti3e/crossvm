@@ -8,6 +8,7 @@ import VMClearInterval from './defs/clearInterval';
 import VMClearTimeout from './defs/clearTimeout';
 import VMSetTimeout from './defs/setTimeout';
 import VMSetInterval from './defs/setInterval';
+import VMFunction from './defs/Function';
 
 if(!global.crossVMInit) {
   global.crossVMInit = true;
@@ -18,7 +19,8 @@ if(!global.crossVMInit) {
     clearInterval: VMClearInterval,
     clearTimeout: VMClearTimeout,
     setTimeout: VMSetTimeout,
-    setInterval: VMSetInterval
+    setInterval: VMSetInterval,
+    Function: VMFunction
   };
   global.crossVMRequire = createGlobalRef(require);
   global.crossVMDefRef = createGlobalRef(global.crossVMDef);
@@ -61,7 +63,7 @@ export function run(code, context, require) {
       var run = (function(global, pub, _Defs_, require){
         (function(){
           for(let key in _Defs_){
-            global[key] = _Defs_[key](pub)
+            global[key] = global[key] ? global[key] : _Defs_[key](pub)
           }
         })()
         ${code}

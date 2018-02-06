@@ -38,7 +38,8 @@ propertyIsEnumerable  toLocaleString        toString              valueOf
   .filter(x => x !== '');
 
 const acornOptions = {
-  allowImportExportEverywhere: true
+  allowImportExportEverywhere: true,
+  allowReturnOutsideFunction: true
 };
 
 let add2predefinedVars = [];
