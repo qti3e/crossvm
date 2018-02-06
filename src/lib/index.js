@@ -45,6 +45,11 @@ export function run(code, context, require) {
     try{
       ${PubRef}({type: 'push', data: 'running'});
       var run = (function(global, pub, _Defs_, require){
+        function _interopRequireDefault(obj) {
+          return obj && obj.__esModule ?
+          obj :
+          { default: obj };
+        }
         (function(){
           for(let key in _Defs_){
             global[key] = global[key] ? global[key] : _Defs_[key](pub)

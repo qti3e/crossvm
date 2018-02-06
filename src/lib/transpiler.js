@@ -86,9 +86,6 @@ const Functions = {
   ImportDeclaration(obj, predefinedVars, isTopLevel) {
     let re = [];
     remove(obj);
-    const f = `
-    function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-    `;
     if(obj.specifiers.length === 0) {
       prepend(obj, `${importFunction}(${obj.source.raw});`);
       return null;
@@ -118,7 +115,12 @@ const Functions = {
         break;
       }
     }
-    prepend(obj, `${declarationPrefix}${declarations.join()}(function(){${f}${re.join('')}})()`);
+    prepend(obj, `${declarationPrefix}${declarations.join()}
+    __CROSSVM_IMPORT_F_ = (function(){
+      ${re.join('\n')}
+    })
+    __CROSSVM_IMPORT_F_()
+    `);
     return null;
   },
   ExpressionStatement(obj, predefinedVars) {
@@ -276,8 +278,7 @@ const Functions = {
       for(let i = tree.body.length - 1; i >= 0; i -= 1) {
         let c = tree.body[i];
         if(c.type === 'VariableDeclaration' || c.type === 'ExpressionStatement') {
-          let f = i === 0 ? prepend : append;
-          f(tree.body[Math.max(0, i - 1)], 'return ');
+          prepend(tree.body[i], 'return ');
           break;
         }
       }
