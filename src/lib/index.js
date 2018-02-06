@@ -50,11 +50,7 @@ export function run(code, context, require) {
           obj :
           { default: obj };
         }
-        (function(){
-          for(let key in _Defs_){
-            global[key] = global[key] ? global[key] : _Defs_[key](pub)
-          }
-        })()
+        const ${Object.keys(global.crossVMDef).map(key => key + '=_Defs_.' + key + '(pub)').join()};
         ${code}
       })
       var data = run.call(${context}, ${context},${PubRef}, ${global.crossVMDefRef}, ${RequireRef})

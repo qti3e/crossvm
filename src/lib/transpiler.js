@@ -317,9 +317,9 @@ const Functions = {
 
 export default function (code) {
   let tree = acorn.parse(code, acornOptions);
-  let vars = JavaScriptPredefinedValues.filter(x => !global.crossVMDef[x]);
   Functions.BlockStatement(tree, [
-    ...vars,
+    ...JavaScriptPredefinedValues,
+    ...Object.keys(global.crossVMDef),
     importFunction,
     'global'
   ], true);
