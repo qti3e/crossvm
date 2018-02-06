@@ -33,8 +33,12 @@ export function shortId() {
   return ret.join('');
 }
 
+export function getGName() {
+  return IS_NODE ? 'global' : 'window';
+}
+
 export function createGlobalRef(obj) {
   let id = shortId();
   global.crossVMRefs[id] = obj;
-  return `global.crossVMRefs['${id}']`;
+  return `${getGName()}.crossVMRefs['${id}']`;
 }
