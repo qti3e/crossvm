@@ -35,3 +35,14 @@ job.on('write', (event) => {
   // { type: 'log', data: [ 'Hello from CrossVM' ], time: 1517771857553 }
 });
 ```
+
+# Note  
+CrossVM is not a security mechanism. Do not use it to run untrusted code.  
+There is always a way to get out of sandbox like:
+```js
+const {createContext, run} = require('crossvm');
+const context = createContext();
+run('"".constructor.constructor("return this")().console.log=()=> { throw new Error("pwnd");}', context);
+console.log("Hello world");
+```
+(Thanks to [Dark Marouane](https://www.reddit.com/user/dark-marouane) for clarifying this)
