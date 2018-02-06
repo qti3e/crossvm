@@ -1,6 +1,6 @@
 import Bridge from './bridge';
 import Job from './job';
-import {createGlobalRef, globalEval, global} from './utils';
+import {createGlobalRef, globalEval, global, IS_NODE} from './utils';
 import Transpiler from './transpiler';
 
 import VMConsole from './defs/console';
@@ -9,22 +9,6 @@ import VMClearTimeout from './defs/clearTimeout';
 import VMSetTimeout from './defs/setTimeout';
 import VMSetInterval from './defs/setInterval';
 import VMFunction from './defs/Function';
-
-if(!global.crossVMInit) {
-  global.crossVMInit = true;
-  global.crossVMRefs = {};
-  global.crossVMDef = {
-    // console: ...
-    console: VMConsole,
-    clearInterval: VMClearInterval,
-    clearTimeout: VMClearTimeout,
-    setTimeout: VMSetTimeout,
-    setInterval: VMSetInterval,
-    Function: VMFunction
-  };
-  global.crossVMRequire = createGlobalRef(require);
-  global.crossVMDefRef = createGlobalRef(global.crossVMDef);
-}
 
 export function registerVMDef(name, method) {
   global.crossVMDef[name] = method;
@@ -79,4 +63,26 @@ export function run(code, context, require) {
     bridge.pub({type: 'crashed', data: e});
   }
   return job;
+}
+
+if(!global.crossVMInit) {
+  global.crossVMInit = true;
+  global.crossVMRefs = {};
+  global.crossVMDef = {
+    // console: ...
+    console: VMConsole,
+    clearInterval: VMClearInterval,
+    clearTimeout: VMClearTimeout,
+    setTimeout: VMSetTimeout,
+    setInterval: VMSetInterval,
+    Function: VMFunction
+  };
+  if(IS_NODE) {
+    global.crossVMRequire = createGlobalRef(require);
+  } else {
+    global.crossVMRequire = createGlobalRef(function () {
+      return {};
+    });
+  }
+  global.crossVMDefRef = createGlobalRef(global.crossVMDef);
 }

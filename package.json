@@ -1,6 +1,6 @@
 {
   "name": "crossvm",
-  "version": "0.0.7",
+  "version": "0.0.7-rc2",
   "description": "Browser compatible Node VM",
   "main": "dist/lib/index.js",
   "scripts": {
