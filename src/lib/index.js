@@ -1,89 +1,10 @@
-import Bridge from './bridge';
-import Job from './job';
-import {createGlobalRef, globalEval, global, IS_NODE} from './utils';
-import Transpiler from './transpiler';
+import {IS_NODE} from './utils';
+import WebVM from './vm';
+let vm = WebVM;
 
-import VMConsole from './defs/console';
-import VMClearInterval from './defs/clearInterval';
-import VMClearTimeout from './defs/clearTimeout';
-import VMSetTimeout from './defs/setTimeout';
-import VMSetInterval from './defs/setInterval';
-import VMFunction from './defs/Function';
-
-export function registerVMDef(name, method) {
-  global.crossVMDef[name] = method;
+// todo use WebVM in test environment
+if(IS_NODE) {
+  vm = require('vm');
 }
 
-export function createContext(sandbox = {}) {
-  let ref = createGlobalRef(sandbox);
-  return {
-    ref,
-    get(name) {
-      return globalEval(`${ref}.${name}`);
-    },
-    getSandbox() {
-      return globalEval(`${ref}`);
-    }
-  };
-}
-
-export function run(code, context, require) {
-  context = context.ref;
-  let bridge = new Bridge();
-  let PubRef = createGlobalRef(bridge) + '.pub';
-  let RequireRef = typeof require === 'string' ? require : null;
-  if(!RequireRef) {
-    RequireRef = typeof require === 'function' ?
-      createGlobalRef(require) :
-      global.crossVMRequire;
-  }
-  let job = new Job(bridge);
-  try {
-    code = Transpiler(code);
-    code =
-    `
-    try{
-      ${PubRef}({type: 'push', data: 'running'});
-      var run = (function(global, pub, _Defs_, require){
-        function _interopRequireDefault(obj) {
-          return obj && obj.__esModule ?
-          obj :
-          { default: obj };
-        }
-        const ${Object.keys(global.crossVMDef).map(key => key + '=_Defs_.' + key + '(pub)').join()};
-        ${code}
-      })
-      var data = run.call(${context}, ${context},${PubRef}, ${global.crossVMDefRef}, ${RequireRef})
-      ${PubRef}({type: 'result', data: data})
-      ${PubRef}({type: 'rm', data: 'running'});
-    } catch(e){
-      ${PubRef}({type: 'crashed', data: e});
-    }`;
-    globalEval(code);
-  } catch (e) {
-    bridge.pub({type: 'crashed', data: e});
-  }
-  return job;
-}
-
-if(!global.crossVMInit) {
-  global.crossVMInit = true;
-  global.crossVMRefs = {};
-  global.crossVMDef = {
-    // console: ...
-    console: VMConsole,
-    clearInterval: VMClearInterval,
-    clearTimeout: VMClearTimeout,
-    setTimeout: VMSetTimeout,
-    setInterval: VMSetInterval,
-    Function: VMFunction
-  };
-  if(IS_NODE) {
-    global.crossVMRequire = createGlobalRef(require);
-  } else {
-    global.crossVMRequire = createGlobalRef(function () {
-      return {};
-    });
-  }
-  global.crossVMDefRef = createGlobalRef(global.crossVMDef);
-}
+module.exports = vm;
