@@ -19,11 +19,9 @@ Look at Node's VM [official documentation](https://nodejs.org/api/vm.html)
 
 # Note  
 CrossVM is not a security mechanism. Do not use it to run untrusted code.  
-There is always a way to get out of sandbox like:
+There is always a way to get out of sandbox like running this code:
 ```js
-const {createContext, run} = require('crossvm');
-const context = createContext();
-run('"".constructor.constructor("return this")().console.log=()=> { throw new Error("pwnd");}', context);
-console.log("Hello world");
+"".constructor.constructor("return this")().console.log=()=> { throw new Error("pwnd");}
 ```
+
 (Thanks to [Dark Marouane](https://www.reddit.com/user/dark-marouane) for clarifying this)
