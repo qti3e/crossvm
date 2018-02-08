@@ -12,29 +12,10 @@ npm install --save crossvm
 ```  
 
 # Testing
-
-```bash
-git clone https://github.com/Qti3e/crossvm.git
-cd crossvm
-npm install
-npm run test
-```
+Writing tests is in progress
 
 # Example
-```js
-import {createContext, run} from 'crossvm';
-const context1 = createContext();
-const context2 = createContext({a: 4});
-run('a = 3', context1);
-run('a += 5', context2);
-assert(context1.get('a') === 3); // true
-assert(context2.get('a') === 9); // true
-let job = run(`console.log('Hello from CrossVM')`);
-job.on('write', (event) => {
-  // event:
-  // { type: 'log', data: [ 'Hello from CrossVM' ], time: 1517771857553 }
-});
-```
+Look at Node's VM [official documentation](https://nodejs.org/api/vm.html)
 
 # Note  
 CrossVM is not a security mechanism. Do not use it to run untrusted code.  
