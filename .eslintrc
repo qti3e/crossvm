@@ -53,8 +53,11 @@
       "skipWords": [
         // words for propel-notebook
         "propel",
+        "Contextify",
+        "contextified",
         "vm",
         "transpiler",
+        "transpiled",
         "Transpiler",
         "Transpile",
         "Array",
