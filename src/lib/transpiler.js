@@ -5,32 +5,16 @@ export const importFunction = 'require';
 
 export const JavaScriptPredefinedValues = (`
 Array                 Boolean               Date                  Error
-EvalError             Function              Infinity              JSON
-Math                  NaN                   Number                Object
-RangeError            ReferenceError        RegExp                String
-SyntaxError           TypeError             URIError              decodeURI
-decodeURIComponent    encodeURI             encodeURIComponent
+EvalError             Function              Infinity              NaN
+Number                Object                RegExp                String
 isFinite              isNaN                 parseFloat            parseInt
-undefined             ArrayBuffer           Atomics               Buffer
-DataView              Float32Array          Float64Array
-Int16Array            Int32Array            Int8Array             Intl
-Map                   Promise               Proxy                 Reflect
-Set                   SharedArrayBuffer     Symbol                Uint16Array
-Uint32Array           Uint8Array            Uint8ClampedArray     WeakMap
-WeakSet               WebAssembly           assert
-async_hooks           buffer                clearImmediate
-clearInterval         clearTimeout          cluster               console
-crypto                dgram                 dns                   domain
-escape                events
-http                  http2                 https                 module
-net                   os                    path                  perf_hooks
-process               punycode              querystring           readline
-repl                  require               root                  setImmediate
-setInterval           setTimeout            stream                string_decoder
-tls                   tty                   unescape              url
-util                  v8                    vm                    zlib
-__defineGetter__      __defineSetter__      __lookupGetter__      __lookupSetter__
-__proto__             constructor           hasOwnProperty        isPrototypeOf
+undefined             ArrayBuffer           DataView              Float32Array
+Float64Array          Int16Array            Int32Array            Int8Array
+Map                   Proxy                 Reflect               Set
+Symbol                Uint16Array           Uint32Array           Uint8Array
+Uint8ClampedArray     WeakMap               WeakSet               clearInterval
+clearTimeout          cluster               console               global
+setInterval           setTimeout            hasOwnProperty        isPrototypeOf
 propertyIsEnumerable  toLocaleString        toString              valueOf
 `)
   .split(/\s+/g)
@@ -77,12 +61,18 @@ function readFunctionParamsName(params) {
 }
 
 const doNotParse = {
-  ForStatement: ['init', 'body']
+  ForStatement: ['init', 'body'],
+  ArrowFunctionExpression: ['params', 'body']
   // FunctionDeclaration: ['body', 'params'],
   // FunctionExpression: ['body', 'params']
 };
 
 const Functions = {
+  ArrowFunctionExpression(obj, predefinedVars) {
+    readFunctionParamsName(obj.params);
+    obj.body = [obj.body];
+    this.BlockStatement(obj, predefinedVars);
+  },
   ImportDeclaration(obj, predefinedVars, isTopLevel) {
     let re = [];
     remove(obj);
@@ -174,6 +164,7 @@ const Functions = {
     readFunctionParamsName(obj.params);
     return null;
   },
+
   VariableDeclaration(obj, predefinedVars, isTopLevel) {
     if(!isTopLevel) {
       for(let i = 0; i < obj.declarations.length; i += 1) {
@@ -284,6 +275,16 @@ const Functions = {
       }
     }
 
+    // Push function names to predefinedVars before everything
+    // It allows users to use functions before function declaration
+    // (Just like standard JS)
+    for(let i = 0; i < tree.body.length; i += 1) {
+      // FunctionExpression, FunctionDeclaration
+      if(tree.body[i].type.startsWith('Function') && tree.body[i].id) {
+        predefinedVars.push(tree.body[i].id.name);
+      }
+    }
+
     function walk(obj) {
       if(!obj) {
         return;
@@ -317,12 +318,7 @@ const Functions = {
 
 export default function (code) {
   let tree = acorn.parse(code, acornOptions);
-  Functions.BlockStatement(tree, [
-    ...JavaScriptPredefinedValues,
-    ...Object.keys(global.crossVMDef),
-    importFunction,
-    'global'
-  ], true);
+  Functions.BlockStatement(tree, JavaScriptPredefinedValues);
   tree = null;
 
   // merge changes
